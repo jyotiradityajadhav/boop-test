@@ -1,8 +1,7 @@
 <<header
-    Name: Jyotiraditya Jadhav
+    Name: Jyotiraditya Jadhav, Quayim Qadri, Rizwan Gulzarmir
     Assignment: Problem 2: List Reversal
     Date: 29th November 2025
-    Collaborators: Quayim Qadri, Rizwan Gulzarmir
     Professor: Prof. Aalok D. Thakkar
 header>>
 
@@ -98,5 +97,6 @@ ocaml-code>>
         induction>>
         
 proof>>
+
 
 problem>>
