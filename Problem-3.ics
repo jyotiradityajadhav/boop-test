@@ -1,0 +1,92 @@
+<<header
+    Name: Jyotiraditya Jadhav
+    Date: 29th November 2025
+    Collaborators: Quayim Qadri, Rizwan Gulzarmir
+    Professor: Prof. Aalok D. Thakkar
+header>>
+
+<<problem 3: "Egyptian Fractions"
+
+<<blueprint
+        <<functional-correctness
+            requires: 
+                0 < numerator < denominator
+                numerator and denominator are positive integers
+            ensures:
+                returns list of denominators where each fraction 1/denom sums to original
+                all fractions in result have numerator 1
+                sum(result) = numerator/denominator
+                denominators in result are distinct and increasing
+        functional-correctness>>
+blueprint>>
+
+<<operational steps
+    Step 1: Handle base case - if numerator divides denominator evenly, 
+            return single unit fraction
+    
+    Step 2: Compute the smallest integer k such that 1/k ≤ numerator/denominator
+            This is given by k = ceiling(denominator/numerator)
+    
+    Step 3: Add 1/k to the result list
+    
+    Step 4: Compute the remaining fraction after subtraction:
+            numerator' = numerator × k - denominator
+            denominator' = denominator × k
+    
+    Step 5: If remaining fraction numerator is 0, return result
+            Otherwise, recursively process the remaining fraction
+    
+    Step 6: Continue until remaining fraction becomes a unit fraction or zero
+operational steps>>
+
+<<ocaml-code
+let rec egyptian num den =
+  if num = 1 then
+    [den]
+  else
+    let k = (den + num - 1) / num in
+    let new_num = num * k - den in
+    let new_den = den * k in
+    k :: egyptian new_num new_den
+
+
+ocaml-code>>
+
+<<proof
+        <<invariant
+            Initialisation: 
+                Input fraction = num/den
+                Invariant: sum of unit fractions collected + current_fraction = original_fraction
+            
+            Maintenance:
+                At each step: current_fraction = num/den
+                We take unit fraction 1/k where k = ceil(den/num)
+                Then: num/den - 1/k = (num×k - den)/(den×k)
+                So new_fraction = (num×k - den)/(den×k)
+                Thus: collected_fractions + new_fraction = original_fraction
+                
+            Termination:
+                new_num = num×k - den < num (since k = ceil(den/num) implies num×k - den < num)
+                Numerator strictly decreases each iteration
+                Since numerator is positive integer, must eventually reach 1
+        invariant>>
+
+        <<induction
+            Base case: When num = 1
+                Returns [den] and 1/den = original fraction when num=1
+                
+            Inductive hypothesis:
+                Assume egyptian new_num new_den returns correct list of denominators
+                such that sum(1/d for d in result) = new_num/new_den
+                
+            Inductive step:
+                Let k = ceil(den/num)
+                Then num/den = 1/k + new_num/new_den
+                By IH: new_num/new_den = sum of unit fractions from recursive call
+                Therefore: num/den = 1/k + sum(recursive_result) = sum(k::recursive_result)
+                Thus the algorithm returns correct result
+        induction>>
+        
+proof>>
+
+problem>>

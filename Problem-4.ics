@@ -1,0 +1,106 @@
+<<header
+    Name: Jyotiraditya Jadhav
+    Date: 29th November 2025
+    Collaborators: Quayim Qadri, Rizwan Gulzarmir
+    Professor: Prof. Aalok D. Thakkar
+header>>
+
+<<problem 4: "Stalin Sort"
+
+<<blueprint
+        <<functional-correctness
+            requires: 
+                input is a list of comparable elements
+            ensures:
+                returns a sorted list in non-decreasing order
+                every element in output appears in input in the same relative order
+                the output is a subsequence of the input
+                for all i in [0, length(output)-2], output[i] <= output[i+1]
+        functional-correctness>>
+blueprint>>
+
+<<operational steps
+    Step 1: Handle the base case - if input list is empty, return empty list
+    
+    Step 2: For non-empty list, initialize with first element as the starting point
+    
+    Step 3: Iterate through remaining elements in the list
+            - For each element, compare with the last element in the result list
+            - If current element >= last element in result, append it to result
+            - Otherwise, skip the current element (it is "eliminated")
+    
+    Step 4: Continue until all elements in input list are processed
+    
+    Step 5: Return the accumulated result list
+    
+    Step 6: The algorithm ensures the result is sorted by construction since
+            we only add elements that maintain the non-decreasing property
+operational steps>>
+
+<<ocaml-code
+let stalin_sort lst =
+  let rec build_sorted current result remaining =
+    match remaining with
+    | [] -> result
+    | head :: tail ->
+        if head >= current then
+          build_sorted head (head :: result) tail
+        else
+          build_sorted current result tail
+  in
+  
+  match lst with
+  | [] -> []
+  | first :: rest -> 
+      let reversed_result = build_sorted first [first] rest in
+      List.rev reversed_result
+ocaml-code>>
+
+<<proof
+        <<invariant
+            Initialisation: 
+                Before processing any elements: current = first element, acc = [first]
+                Invariant: acc is non-decreasing and all elements in acc maintain original order
+                
+            Maintenance:
+                At each step, we consider element x from remaining list
+                If x >= current: we add x to acc and update current to x
+                    - acc remains non-decreasing since x >= current (last element)
+                    - Original order maintained since we process list sequentially
+                If x < current: we skip x
+                    - acc unchanged, so invariant preserved
+                    
+            Termination: 
+                remaining list decreases by one element each iteration
+                Since input list is finite, remaining will eventually be empty
+                When remaining = [], we return reversed accumulator which is sorted
+        invariant>>
+
+        <<induction
+            We prove by structural induction on lists that stalin_sort returns a sorted subsequence
+            
+            Base case: When lst = []
+                stalin_sort([]) = [] 
+                Empty list is trivially sorted and a subsequence of input
+                
+            Inductive hypothesis:
+                Assume for all lists of length k, stalin_sort returns a sorted subsequence
+                that maintains original order of elements
+                
+            Inductive step:
+                Consider list x::xs of length k+1
+                Case 1: xs is empty
+                    stalin_sort([x]) = [x] which is sorted
+                    
+                Case 2: xs is non-empty
+                    Let result = stalin_sort(x::xs)
+                    By construction, we start with [x] and only add elements from xs
+                    that are >= the last element added
+                    Therefore result is non-decreasing
+                    Since we process elements in order, the relative order is maintained
+                    Thus result is a sorted subsequence of x::xs
+        induction>>
+        
+proof>>
+
+problem>>

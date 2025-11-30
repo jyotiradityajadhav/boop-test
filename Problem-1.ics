@@ -1,0 +1,96 @@
+<<header
+    Name: Jyotiraditya Jadhav
+    Assignment: Problem 1: Division as Repeated Subtraction
+    Date: 29th November 2025
+    Collaborators: Quayim Qadri, Rizwan Gulzarmir
+    Professor: Prof. Aalok D. Thakkar
+header>>
+
+<<problem 1: "Division is Repeated Subtraction"
+
+<<blueprint
+        <<functional-correctness
+            requires: 
+                divisor > 0 (cannot divide by zero)
+                dividend >= 0 (non-negative numbers only)
+            ensures:
+                returns (quotient, remainder) such that:
+                dividend = divisor × quotient + remainder
+                and 0 ≤ remainder < divisor
+        functional-correctness>>
+blueprint>>
+
+<<operational steps
+    Step 1: Handle the base case - if dividend is less than divisor, 
+            then quotient is 0 and remainder is dividend
+    
+    Step 2: Initialize quotient counter to 0 and working value to dividend
+    
+    Step 3: Repeatedly subtract divisor from working value until 
+            working value becomes less than divisor
+    
+    Step 4: Each successful subtraction increases quotient by 1
+    
+    Step 5: When subtraction is no longer possible (working value < divisor),
+            the remaining working value is the remainder
+    
+    Step 6: Return the final (quotient, remainder) pair
+operational steps>>
+
+<<ocaml-code
+
+let rec div_sub (dividend : int) (divisor : int) : int * int =
+    if divisor <= 0 then 
+        failwith "Error: Division by zero or negative divisor"
+    else if dividend < divisor then 
+        (0, dividend)
+    else
+        let (q, r) = div_sub (dividend - divisor) divisor in
+        (q + 1, r)
+        
+ocaml-code>>
+
+<<proof
+        <<invariant
+            Initialisation: 
+                Before first iteration: current = dividend, count = 0
+                Invariant holds: dividend = divisor × 0 + current
+                
+            Maintenance:
+                After each iteration: 
+                current' = current - divisor
+                count' = count + 1
+                dividend = divisor × count + current
+                ⇒ dividend = divisor × (count' - 1) + (current' + divisor)
+                ⇒ dividend = divisor × count' + current'
+                So invariant is maintained
+                
+            Termination: 
+                current decreases by divisor each iteration
+                Since divisor > 0, current will eventually become < divisor
+                When current < divisor, loop terminates
+        invariant>>
+
+        <<induction
+            base case: When dividend < divisor
+                Returns (0, dividend)
+                Check: dividend = divisor × 0 + dividend ✓
+                and 0 ≤ dividend < divisor (by base case condition) ✓
+                
+            inductive hypothesis: 
+                Assume div_sub(dividend - divisor, divisor) returns correct (q, r)
+                such that: (dividend - divisor) = divisor × q + r 
+                and 0 ≤ r < divisor
+                
+            inductive step:
+                div_sub(dividend, divisor) returns (q + 1, r)
+                Then: dividend = divisor × (q + 1) + r
+                ⇒ dividend = divisor × q + divisor + r
+                But from IH: (dividend - divisor) = divisor × q + r
+                ⇒ dividend = divisor + divisor × q + r = divisor × (q + 1) + r ✓
+                And 0 ≤ r < divisor still holds ✓
+        induction>>
+        
+proof>>
+
+problem>>

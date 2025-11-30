@@ -1,0 +1,102 @@
+<<header
+    Name: Jyotiraditya Jadhav
+    Assignment: Problem 2: List Reversal
+    Date: 29th November 2025
+    Collaborators: Quayim Qadri, Rizwan Gulzarmir
+    Professor: Prof. Aalok D. Thakkar
+header>>
+
+<<problem 2: "List Reversal"
+
+<<blueprint
+        <<functional-correctness
+            requires: 
+                input is a valid list (can be empty)
+            ensures:
+                returns a new list that is the reverse of the input list
+                the length of output equals length of input
+                for all indices i, output[i] = input[n-i-1] where n is length
+        functional-correctness>>
+blueprint>>
+
+<<operational steps
+    Step 1: Handle the base case - if input list is empty, return empty list
+    
+    Step 2: For the recursive approach:
+            - Separate the first element (head) from the rest of the list (tail)
+            - Recursively reverse the tail
+            - Append the head to the end of the reversed tail
+    
+    Step 3: For the efficient tail-recursive approach:
+            - Use an accumulator to build the reversed list
+            - Start with empty accumulator
+            - Take elements from front of input and add to front of accumulator
+            - When input is empty, return accumulator (which is the reversed list)
+    
+    Step 4: The tail-recursive version is more efficient as it doesn't require
+            repeated appending to the end of lists
+operational steps>>
+
+<<ocaml-code
+
+let rec naive_reverse (lst : 'a list) : 'a list =
+    match lst with
+    | [] -> []
+    | x :: xs -> (naive_reverse xs) @ [x]
+
+let reverse (lst : 'a list) : 'a list =
+    let rec helper (acc : 'a list) (remaining : 'a list) : 'a list =
+        match remaining with
+        | [] -> acc
+        | x :: xs -> helper (x :: acc) xs
+    in
+    helper [] lst
+
+ocaml-code>>
+
+<<proof
+        <<invariant
+            Initialisation: 
+                acc = [], remaining = original_list
+                Invariant: reverse(original_list) = reverse(remaining) @ acc
+                Initially: reverse(original_list) = reverse(original_list) @ [] ✓
+                
+            Maintenance:
+                At each step: remaining = x :: xs
+                New state: acc' = x :: acc, remaining' = xs
+                reverse(remaining) @ acc = reverse(xs) @ [x] @ acc
+                = reverse(xs) @ (x :: acc) 
+                = reverse(remaining') @ acc' ✓
+                So invariant is maintained
+                
+            Termination: 
+                remaining decreases by one element each iteration
+                Since list is finite, remaining will eventually become empty
+                When remaining = [], we return acc which equals reverse(original_list)
+        invariant>>
+
+        <<induction
+            We'll prove correctness for the naive recursive version
+            
+            base case: When lst = []
+                naive_reverse([]) = [] ✓ (empty list reversed is empty)
+                
+            inductive hypothesis: 
+                Assume naive_reverse(xs) correctly reverses list xs
+                for all lists xs of length k
+                
+            inductive step:
+                For list x :: xs of length k+1:
+                naive_reverse(x :: xs) = naive_reverse(xs) @ [x]
+                
+                By IH: naive_reverse(xs) = reverse of xs
+                Appending [x] to the end puts x at the end of reversed list
+                This is exactly the reverse of x :: xs
+                
+                Example: [1;2;3] 
+                reverse([2;3]) = [3;2], then append [1] → [3;2;1] ✓
+        induction>>
+        
+proof>>
+
+problem>>
