@@ -1,7 +1,8 @@
 <<header
     Name: Jyotiraditya Jadhav
+    Assignment: Problem 4: Stalin Sort
     Date: 29th November 2025
-    Collaborators: Quayim Qadri, Rizwan Gulzarmir
+    Collaborators: None
     Professor: Prof. Aalok D. Thakkar
 header>>
 
@@ -38,22 +39,24 @@ blueprint>>
 operational steps>>
 
 <<ocaml-code
-let stalin_sort lst =
-  let rec build_sorted current result remaining =
+let stalin_sort (lst : 'a list) : 'a list =
+  let rec helper (current : 'a) (acc : 'a list) (remaining : 'a list) : 'a list =
     match remaining with
-    | [] -> result
-    | head :: tail ->
-        if head >= current then
-          build_sorted head (head :: result) tail
-        else
-          build_sorted current result tail
+    | [] -> List.rev acc
+    | x :: xs -> 
+        match x >= current with
+        | true -> helper x (x :: acc) xs
+        | false -> helper current acc xs
   in
-  
   match lst with
   | [] -> []
-  | first :: rest -> 
-      let reversed_result = build_sorted first [first] rest in
-      List.rev reversed_result
+  | first :: rest -> helper first [first] rest
+
+let test1 : int list = stalin_sort [1; 3; 2; 4; 5; 2; 6]
+let test2 : int list = stalin_sort [5; 1; 2; 3; 4] 
+let test3 : int list = stalin_sort [1; 2; 3; 4]
+let test4 : int list = stalin_sort [4; 3; 2; 1]
+let test5 : int list = stalin_sort []
 ocaml-code>>
 
 <<proof
@@ -64,10 +67,10 @@ ocaml-code>>
                 
             Maintenance:
                 At each step, we consider element x from remaining list
-                If x >= current: we add x to acc and update current to x
+                Case x >= current: we add x to acc and update current to x
                     - acc remains non-decreasing since x >= current (last element)
                     - Original order maintained since we process list sequentially
-                If x < current: we skip x
+                Case x < current: we skip x
                     - acc unchanged, so invariant preserved
                     
             Termination: 
