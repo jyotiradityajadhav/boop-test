@@ -55,11 +55,6 @@ let stalin_sort (input_list : int list) : int list =
       let (_, reversed_result) = final_state in
       List.rev reversed_result
 
-let test1 : int list = stalin_sort [1; 3; 2; 4; 5; 2; 6]
-let test2 : int list = stalin_sort [5; 1; 2; 3; 4] 
-let test3 : int list = stalin_sort [1; 2; 3; 4]
-let test4 : int list = stalin_sort [4; 3; 2; 1]
-let test5 : int list = stalin_sort []
 ocaml-code>>
 
 <<proof
@@ -91,3 +86,4 @@ ocaml-code>>
 proof>>
 
 problem>>
+
